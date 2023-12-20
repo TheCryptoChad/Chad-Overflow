@@ -5,51 +5,13 @@ import NoResult from '@/components/shared/NoResult';
 import LocalSearch from '@/components/shared/search/LocalSearch';
 import { Button } from '@/components/ui/button';
 import { HomePageFilters } from '@/constants/filters';
+import { getQuestions } from '@/lib/actions/question.action';
 import Link from 'next/link';
 import { Fragment } from 'react';
 
-const questions = [
-	{
-		_id: '1',
-		title: 'Cascading Deletes in SQLAlchemy',
-		tags: [
-			{
-				_id: '1',
-				name: 'python',
-			},
-		],
-		author: {
-			_id: '1',
-			name: 'John Doe',
-			picture: 'picture.jpg',
-		},
-		upvotes: 10,
-		views: 100,
-		answers: [],
-		createdAt: new Date('2021-09-01T12:00:00.000Z'),
-	},
-	{
-		_id: '2',
-		title: 'Cascading Deletes in SQLAlchemy',
-		tags: [
-			{
-				_id: '1',
-				name: 'python',
-			},
-		],
-		author: {
-			_id: '1',
-			name: 'John Doe',
-			picture: 'picture.jpg',
-		},
-		upvotes: 10,
-		views: 100,
-		answers: [],
-		createdAt: new Date('2021-09-01T12:00:00.000Z'),
-	},
-];
-
-export default function Home() {
+export default async function Home() {
+	const result = await getQuestions({});
+	console.log(result.questions);
 	return (
 		<Fragment>
 			<div className='flex w-full flex-col-reverse justify-between gap-4 sm:flex-row sm:items-center'>
@@ -78,8 +40,8 @@ export default function Home() {
 			<HomeFilters />
 
 			<div className='mt-10 flex w-full flex-col gap-6'>
-				{questions.length > 0 ? (
-					questions.map((question) => (
+				{result.questions.length > 0 ? (
+					result.questions.map((question) => (
 						<QuestionCard
 							key={question._id}
 							_id={question._id}
