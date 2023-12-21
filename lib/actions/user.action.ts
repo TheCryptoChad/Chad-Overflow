@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import User from '../database/user.model';
 import { connectToDatabase } from '../mongoose';
-import { CreateUserParams, DeleteUserParams, UpdateUserParams, UpdateUserParams } from './shared.types';
+import { CreateUserParams, DeleteUserParams, UpdateUserParams } from './shared.types';
 import Question from '../database/question.model';
 
 export async function getUserById(params: any) {
@@ -57,7 +57,7 @@ export async function deleteUser(params: DeleteUserParams) {
 
 		if (!user) throw new Error('User not found');
 
-		const userQuestionIds = await Question.find({ author: user._id }).distinct('_id');
+		// const userQuestionIds = await Question.find({ author: user._id }).distinct('_id');
 		await Question.deleteMany({ author: user._id });
 
 		const deletedUser = await User.findByIdAndDelete(user._id);
