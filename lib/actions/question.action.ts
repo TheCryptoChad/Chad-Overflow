@@ -1,11 +1,11 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import Question from '../database/question.model';
-import Tag from '../database/tag.model';
-import User from '../database/user.model';
+import Question from '../../database/question.model';
+import Tag from '../../database/tag.model';
+import User from '../../database/user.model';
 import { connectToDatabase } from '../mongoose';
-import { CreateQuestionParams, GetQuestionsParams } from './shared.types';
+import { CreateQuestionParams, GetQuestionByIdParams, GetQuestionsParams } from './shared.types';
 
 export async function getQuestions(params: GetQuestionsParams) {
 	try {
@@ -48,4 +48,21 @@ export async function createQuestion(params: CreateQuestionParams) {
 
 		revalidatePath(path);
 	} catch (error: any) {}
+}
+
+export async function getQuestionById(params: GetQuestionByIdParams) {
+	try {
+		connectToDatabase();
+
+		const { questionId } = params;
+
+		const question = await Question.findById(questionId)
+			.populate({ path: 'tags', model: Tag, select: '_id name' })
+			.populate({ path: 'author', model: User, select: '_id clerkId name picture' });
+
+		return question;
+	} catch (error: any) {
+		console.log(error);
+		throw error;
+	}
 }
