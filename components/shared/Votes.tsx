@@ -1,10 +1,13 @@
 'use client';
 
+import { downvoteAnswer, upvoteAnswer } from '@/lib/actions/answer.action';
+import { viewQuestion } from '@/lib/actions/interaction.action';
 import { downvoteQuestion, upvoteQuestion } from '@/lib/actions/question.action';
+import { toggleSaveQuestion } from '@/lib/actions/user.action';
 import { formatNumber } from '@/lib/utils';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
-import React from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
 
 interface VotesProps {
 	type: string;
@@ -18,8 +21,16 @@ interface VotesProps {
 }
 
 const Votes = ({ type, itemId, userId, upvotes, hasUpvoted, downvotes, hasDownvoted, hasSaved }: VotesProps) => {
-	const handleSave = async () => {};
 	const pathname = usePathname();
+	const router = useRouter();
+
+	const handleSave = async () => {
+		await toggleSaveQuestion({
+			userId: JSON.parse(userId),
+			questionId: JSON.parse(itemId),
+			path: pathname,
+		});
+	};
 
 	const handleVote = async (voteType: string) => {
 		try {
@@ -35,13 +46,13 @@ const Votes = ({ type, itemId, userId, upvotes, hasUpvoted, downvotes, hasDownvo
 						path: pathname,
 					});
 				} else if (type === 'answer') {
-					// await upvoteAnswer({
-					// 	questionId: JSON.parse(itemId),
-					// 	userId: JSON.parse(userId),
-					// 	hasupVoted: hasUpvoted,
-					// 	hasdownVoted: hasDownvoted,
-					// 	path: pathname,
-					// });
+					await upvoteAnswer({
+						answerId: JSON.parse(itemId),
+						userId: JSON.parse(userId),
+						hasupVoted: hasUpvoted,
+						hasdownVoted: hasDownvoted,
+						path: pathname,
+					});
 				}
 			}
 
@@ -55,19 +66,26 @@ const Votes = ({ type, itemId, userId, upvotes, hasUpvoted, downvotes, hasDownvo
 						path: pathname,
 					});
 				} else if (type === 'answer') {
-					// await downvoteAnswer({
-					// 	questionId: JSON.parse(itemId),
-					// 	userId: JSON.parse(userId),
-					// 	hasupVoted: hasUpvoted,
-					// 	hasdownVoted: hasDownvoted,
-					// 	path: pathname,
-					// });
+					await downvoteAnswer({
+						answerId: JSON.parse(itemId),
+						userId: JSON.parse(userId),
+						hasupVoted: hasUpvoted,
+						hasdownVoted: hasDownvoted,
+						path: pathname,
+					});
 				}
 			}
 		} catch (error: any) {
 			console.log(error);
 		}
 	};
+
+	useEffect(() => {
+		viewQuestion({
+			questionId: JSON.parse(itemId),
+			userId: userId ? JSON.parse(userId) : undefined,
+		});
+	}, [itemId, userId, pathname, router]);
 
 	return (
 		<div className='flex gap-5'>
@@ -101,14 +119,16 @@ const Votes = ({ type, itemId, userId, upvotes, hasUpvoted, downvotes, hasDownvo
 					</div>
 				</div>
 			</div>
-			<Image
-				src={hasSaved ? '/assets/icons/star-filled.svg' : '/assets/icons/star-red.svg'}
-				width={18}
-				height={18}
-				alt='star'
-				className='cursor-pointer'
-				onClick={handleSave}
-			/>
+			{type === 'question' && (
+				<Image
+					src={hasSaved ? '/assets/icons/star-filled.svg' : '/assets/icons/star-red.svg'}
+					width={18}
+					height={18}
+					alt='star'
+					className='cursor-pointer'
+					onClick={handleSave}
+				/>
+			)}
 		</div>
 	);
 };

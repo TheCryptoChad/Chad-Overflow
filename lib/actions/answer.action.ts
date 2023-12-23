@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import Answer from '../../database/answer.model';
 import { connectToDatabase } from '../mongoose';
-import { AnswerVoteParams, CreateAnswerParams, GetAnswersParams, QuestionVoteParams } from './shared.types';
+import { AnswerVoteParams, CreateAnswerParams, GetAnswersParams } from './shared.types';
 import Question from '@/database/question.model';
 
 export async function createAnswer(params: CreateAnswerParams) {
@@ -54,9 +54,9 @@ export async function upvoteAnswer(params: AnswerVoteParams) {
 			updateQuery = { $addToSet: { upvotes: userId } };
 		}
 
-		const question = await Question.findByIdAndUpdate(questionId, updateQuery, { new: true });
+		const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, { new: true });
 
-		if (!question) throw new Error('Question not found');
+		if (!answer) throw new Error('Answer not found');
 
 		revalidatePath(path);
 	} catch (error: any) {
@@ -65,11 +65,11 @@ export async function upvoteAnswer(params: AnswerVoteParams) {
 	}
 }
 
-export async function downvoteQuestion(params: QuestionVoteParams) {
+export async function downvoteAnswer(params: AnswerVoteParams) {
 	try {
 		connectToDatabase();
 
-		const { questionId, userId, hasupVoted, hasdownVoted, path } = params;
+		const { answerId, userId, hasupVoted, hasdownVoted, path } = params;
 
 		let updateQuery = {};
 
@@ -81,9 +81,9 @@ export async function downvoteQuestion(params: QuestionVoteParams) {
 			updateQuery = { $addToSet: { downvotes: userId } };
 		}
 
-		const question = await Question.findByIdAndUpdate(questionId, updateQuery, { new: true });
+		const answer = await Answer.findByIdAndUpdate(answerId, updateQuery, { new: true });
 
-		if (!question) throw new Error('Question not found');
+		if (!answer) throw new Error('Answer not found');
 
 		revalidatePath(path);
 	} catch (error: any) {
