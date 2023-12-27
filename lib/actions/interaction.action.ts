@@ -1,12 +1,9 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
-import Answer from '../../database/answer.model';
 import { connectToDatabase } from '../mongoose';
 import { ViewQuestionParams } from './shared.types';
 import Question from '@/database/question.model';
 import Interaction from '@/database/interaction.model';
-import path from 'path';
 
 export async function viewQuestion(params: ViewQuestionParams) {
 	try {
@@ -31,8 +28,6 @@ export async function viewQuestion(params: ViewQuestionParams) {
 				question: questionId,
 			});
 		}
-
-		revalidatePath(path);
 	} catch (error: any) {
 		console.log(error);
 		throw error;
