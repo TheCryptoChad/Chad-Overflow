@@ -3,11 +3,12 @@ import NoResult from '@/components/shared/NoResult';
 import LocalSearch from '@/components/shared/search/LocalSearch';
 import { UserFilters } from '@/constants/filters';
 import { getAllTags } from '@/lib/actions/tag.action';
+import { SearchParamsProps } from '@/types';
 import Link from 'next/link';
 import React, { Fragment } from 'react';
 
-const Page = async () => {
-	const result = await getAllTags({});
+const Page = async ({ searchParams }: SearchParamsProps) => {
+	const result = await getAllTags({ searchQuery: searchParams.q });
 
 	return (
 		<Fragment>

@@ -1,13 +1,11 @@
 import QuestionCard from '@/components/cards/QuestionCard';
-import Filter from '@/components/shared/Filter';
 import NoResult from '@/components/shared/NoResult';
 import LocalSearch from '@/components/shared/search/LocalSearch';
-import { QuestionFilters } from '@/constants/filters';
 import { IQuestion } from '@/database/question.model';
 import { getQuestionsByTagId } from '@/lib/actions/tag.action';
 import React, { Fragment } from 'react';
 
-const Page = async ({ params, searchParams }) => {
+const Page = async ({ params, searchParams }: any) => {
 	const result = await getQuestionsByTagId({
 		tagId: params.id,
 		page: 1,
@@ -19,7 +17,7 @@ const Page = async ({ params, searchParams }) => {
 			<h1 className='h1-bold text-dark100_light900'>{result.tagTitle}</h1>
 			<div className='mt-11 w-full'>
 				<LocalSearch
-					route='/'
+					route={`/tags/${params.id}`}
 					iconPosition='left'
 					imgSrc='/assets/icons/search.svg'
 					placeholder='Search for questions'
