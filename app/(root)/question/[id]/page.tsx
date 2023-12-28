@@ -12,7 +12,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { Fragment } from 'react';
 
-const Page = async ({ params }) => {
+const Page = async ({ params, searchParams }) => {
 	const result = await getQuestionById({ questionId: params.id });
 	const { userId: clerkId } = auth();
 	let mongoUser;
@@ -84,6 +84,8 @@ const Page = async ({ params }) => {
 				questionId={result._id}
 				userId={mongoUser._id}
 				totalAnswers={result.answers.length}
+				page={searchParams?.page}
+				filter={searchParams?.filter}
 			/>
 			<Answer
 				question={result.content}

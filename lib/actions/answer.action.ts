@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import Answer from '../../database/answer.model';
 import { connectToDatabase } from '../mongoose';
-import { AnswerVoteParams, CreateAnswerParams, DeleteAnswerParams, GetAnswersParams } from './shared.types';
+import { AnswerVoteParams, CreateAnswerParams, DeleteAnswerParams, GetAnswersParams } from '../shared.types';
 import Question from '@/database/question.model';
 import Interaction from '@/database/interaction.model';
 import { Tag } from 'lucide-react';
@@ -29,11 +29,32 @@ export async function getAnswers(params: GetAnswersParams) {
 	try {
 		connectToDatabase();
 
-		const { questionId } = params;
+		const { questionId, sortBy, page = 1, pageSize = 10 } = params;
 
-		const answers = await Answer.find({ question: questionId }).populate('author', '_id clerkId name picture').sort({ createdAt: -1 });
+		const skipAmount = (page - 1) * pageSize;
 
-		return { answers };
+		let sortOptions = {};
+
+		switch (sortBy) {
+			case 'highestUpvotes':
+				sortOptions = { upvotes: -1 };
+				break;
+			case 'lowestUpvotes':
+				sortOptions = { upvotes: 1 };
+				break;
+			case 'recent':
+				sortOptions = { createdAt: -1 };
+				break;
+			case 'old':
+				sortOptions = { createdAt: 1 };
+				break;
+		}
+
+		const answers = await Answer.find({ question: questionId }).populate('author', '_id clerkId name picture').sort(sortOptions).skip(skipAmount).limit(pageSize);
+		const totalAnswers = await Answer.countDocuments({ questions: questionId });
+		const isNext = totalAnswers > skipAmount + answers.length;
+
+		return { answers, isNext };
 	} catch (error: any) {
 		console.log(error);
 		throw error;

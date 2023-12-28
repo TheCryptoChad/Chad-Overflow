@@ -5,7 +5,7 @@ import Question from '../../database/question.model';
 import Tag from '../../database/tag.model';
 import User from '../../database/user.model';
 import { connectToDatabase } from '../mongoose';
-import { CreateQuestionParams, DeleteQuestionParams, EditQuestionParams, GetQuestionByIdParams, GetQuestionsParams, QuestionVoteParams } from './shared.types';
+import { CreateQuestionParams, DeleteQuestionParams, EditQuestionParams, GetQuestionByIdParams, GetQuestionsParams, QuestionVoteParams } from '../shared.types';
 import Answer from '@/database/answer.model';
 import Interaction from '@/database/interaction.model';
 import console from 'console';
@@ -14,7 +14,9 @@ import { FilterQuery } from 'mongoose';
 export async function getQuestions(params: GetQuestionsParams) {
 	try {
 		connectToDatabase();
-		const { searchQuery } = params;
+		const { searchQuery, filter, page = 1, pageSize = 20 } = params;
+
+		const skipAmount = (page - 1) * pageSize;
 
 		const query: FilterQuery<typeof Question> = {};
 
@@ -22,9 +24,31 @@ export async function getQuestions(params: GetQuestionsParams) {
 			query.$or = [{ title: { $regex: new RegExp(searchQuery, 'i') } }, { content: { $regex: new RegExp(searchQuery, 'i') } }];
 		}
 
-		const questions = await Question.find(query).populate({ path: 'tags', model: Tag }).populate({ path: 'author', model: User }).sort({ createdAt: -1 });
+		let sortOptions = {};
 
-		return { questions };
+		switch (filter) {
+			case 'newest':
+				sortOptions = { createdAt: -1 };
+				break;
+			case 'frequent':
+				sortOptions = { views: -1 };
+				break;
+			case 'unanswered':
+				query.answers = { $size: 0 };
+				break;
+		}
+
+		const questions = await Question.find(query)
+			.populate({ path: 'tags', model: Tag })
+			.populate({ path: 'author', model: User })
+			.skip(skipAmount)
+			.limit(pageSize)
+			.sort(sortOptions);
+
+		const totalQuestions = await Question.countDocuments(query);
+		const isNext = totalQuestions > skipAmount + questions.length;
+
+		return { questions, isNext };
 	} catch (error: any) {
 		console.log(error);
 		throw error;

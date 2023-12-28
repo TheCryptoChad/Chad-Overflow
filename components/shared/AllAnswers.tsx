@@ -7,17 +7,19 @@ import Image from 'next/image';
 import { getTimeStamp } from '@/lib/utils';
 import ParseHTML from './ParseHTML';
 import Votes from './Votes';
+import Pagination from './Pagination';
+import page from '@/app/(root)/(home)/page';
 
 interface AllAnswersProps {
 	questionId: string;
 	userId: string;
 	totalAnswers: number;
 	page?: number;
-	filter?: number;
+	filter?: string;
 }
 
 const AllAnswers = async ({ questionId, userId, totalAnswers, page, filter }: AllAnswersProps) => {
-	const result = await getAnswers({ questionId });
+	const result = await getAnswers({ questionId, page: page ? +page : 1, sortBy: filter });
 	return (
 		<div className='mt-11'>
 			<div className='flex items-center justify-between'>
@@ -64,6 +66,12 @@ const AllAnswers = async ({ questionId, userId, totalAnswers, page, filter }: Al
 						<ParseHTML data={answer.content} />
 					</article>
 				))}
+			</div>
+			<div className='mt-10'>
+				<Pagination
+					pageNumber={page ? +page : 1}
+					isNext={result.isNext}
+				/>
 			</div>
 		</div>
 	);
