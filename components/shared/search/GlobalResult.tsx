@@ -14,11 +14,7 @@ const GlobalResult = () => {
 	const type = searchParams.get('type');
 
 	const [isLoading, setIsLoading] = useState<boolean>(false);
-	const [result, setResult] = useState([
-		{ type: 'question', id: '1', title: 'NextJS question' },
-		{ type: 'tag', id: '1', title: 'NextJS tag' },
-		{ type: 'user', id: '1', title: 'NextJS user' },
-	]);
+	const [result, setResult] = useState([]);
 
 	useEffect(() => {
 		const fetchResult = async () => {
