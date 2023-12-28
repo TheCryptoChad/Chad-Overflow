@@ -2,7 +2,8 @@
 
 import { revalidatePath } from 'next/cache';
 import User from '../../database/user.model';
-import { connectToDatabase, FilterQuery } from '../mongoose';
+import { connectToDatabase } from '../mongoose';
+import { FilterQuery } from 'mongoose';
 import {
 	CreateUserParams,
 	DeleteUserParams,
@@ -227,7 +228,7 @@ export async function getUserInfo(params: GetUserByIdParams) {
 			{ type: 'ANSWER_COUNT' as BadgeCriteriaType, count: totalAnswers },
 			{ type: 'QUESTION_UPVOTES' as BadgeCriteriaType, count: questionUpvotes?.totalUpvotes || 0 },
 			{ type: 'ANSWER_UPVOTES' as BadgeCriteriaType, count: answerUpvotes?.totalUpvotes || 0 },
-			{ type: 'QUESTION_VIEWS' as BadgeCriteriaType, count: questionViews?.totalViews || 0 },
+			{ type: 'TOTAL_VIEWS' as BadgeCriteriaType, count: questionViews?.totalViews || 0 },
 		];
 
 		const badgeCounts = assignBadges({ criteria });

@@ -3,7 +3,7 @@ import { getUserById } from '@/lib/actions/user.action';
 import { auth } from '@clerk/nextjs';
 import { Fragment } from 'react';
 
-const Page = async ({ params }) => {
+const Page = async () => {
 	const { userId } = auth();
 	if (!userId) return null;
 

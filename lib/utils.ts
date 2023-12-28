@@ -1,7 +1,6 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import qs from 'query-string';
-import { url } from 'inspector';
 import { BADGE_CRITERIA } from '@/constants';
 import { BadgeCounts } from '@/types';
 
@@ -114,7 +113,7 @@ export const assignBadges = (params: BadgeParam) => {
 
 		Object.keys(badgeLevels).forEach((level: any) => {
 			if (count >= badgeLevels[level]) {
-				badgeCounts[level] += 1;
+				badgeCounts[level as keyof BadgeCounts] += 1;
 			}
 		});
 	});
