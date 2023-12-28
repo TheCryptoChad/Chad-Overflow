@@ -2,7 +2,6 @@ import { ClerkProvider } from '@clerk/nextjs';
 import { ReactNode } from 'react';
 import { Inter, Space_Grotesk as SpaceGrotesk } from 'next/font/google';
 import { Metadata } from 'next';
-
 import './globals.css';
 import '../styles/prism.css';
 import { ThemeProvider } from '@/context/ThemeProvider';
