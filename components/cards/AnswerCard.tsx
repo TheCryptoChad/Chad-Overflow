@@ -39,7 +39,7 @@ const AnswerCard = ({ clerkId, _id, question, author, upvotes, createdAt }: Prop
 				<SignedIn>
 					{showActionButtons && (
 						<EditDeleteAction
-							type='Answer'
+							type='answer'
 							itemId={JSON.stringify(_id)}
 						/>
 					)}
